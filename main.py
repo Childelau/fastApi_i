@@ -1,7 +1,7 @@
 from typing import Union, List
 from enum import Enum
 
-from fastapi import FastAPI, Query, Path, Body, Cookie
+from fastapi import FastAPI, Query, Path, Body, Cookie, Header
 from pydantic import BaseModel, Field, HttpUrl
 
 app = FastAPI()
@@ -60,8 +60,16 @@ fake_items_db = [{"item_name": "Foo"}, {"item_name": "Bar"}, {"item_name": "Baz"
 
 # cookie
 @app.get('/items/')
-async def read_item(skip: int = 0, limit: int = 10, ads_id: Union[str, None] = Cookie(default=None)):
-    return {'lists': fake_items_db[skip: skip + limit], 'cookie_id': ads_id}
+async def read_item(
+        skip: int = 0, limit: int = 10,
+        ads_id: Union[str, None] = Cookie(default=None),
+        user_agent: Union[str, None] = Header(default=None)
+):
+    return {
+        'lists': fake_items_db[skip: skip + limit],
+        'cookie_id': ads_id,
+        'User-Agent': user_agent
+    }
 
 
 @app.get('/users/{user_id}/items/{item_id}')
